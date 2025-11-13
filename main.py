@@ -4,6 +4,13 @@ import clipboard as cb
 import time
 
 def update(window:sg.Window,list_to_update:list[str]):
+    """
+    Update a clipboard history list with the current saved clipboard entry, then reduce size of list to 30 items.
+    
+    Input the open window and the clipboard history list.
+
+    The code writes the change into the event and value of the window.
+    """
     while True:
         if not window["clipboard"].get() == cb.paste():
             list_to_update.insert(0,cb.paste())
