@@ -4,6 +4,13 @@ import clipboard as cb
 import time
 
 def update(window:sg.Window,list_to_update:list[str]):
+    """
+    Update a clipboard history list with the current saved clipboard entry, then reduce size of list to 30 items.
+    
+    Input the open window and the clipboard history list.
+
+    The code writes the change into the event and value of the window.
+    """
     while True:
         if not window["clipboard"].get() == cb.paste():
             list_to_update.insert(0,cb.paste())
@@ -11,11 +18,11 @@ def update(window:sg.Window,list_to_update:list[str]):
             window.write_event_value("clipboard",cb.paste())
         time.sleep(2)
 
-clipboard_list = [cb.paste()] + ["" for i in range(29)]
+clipboard_list:list[str] = [cb.paste()] + ["" for i in range(29)]
 
 size=(30,30)
 
-layout = [
+layout: list[list] = [
     [
         sg.T(text=cb.paste(),key="clipboard")
     ],[
@@ -25,20 +32,20 @@ layout = [
     ]
 ]
 
-w = sg.Window("Titel", layout=layout,finalize=True,grab_anywhere=True,keep_on_top=True)
-threading.Thread(target=update,daemon=True,args=(w,clipboard_list)).start()
+window = sg.Window("Titel", layout=layout,finalize=True,grab_anywhere=True,keep_on_top=True)
+threading.Thread(target=update,daemon=True,args=(window,clipboard_list)).start()
 
 while True:
-    e,v = w.read()
-    print(e,v)
+    event,val = window.read()
+    # print(event,val)
 
-    if e == "clipboard":
-        w["clipboard"].update(value=cb.paste())
-        w["listbox"].update(values=clipboard_list)
+    if event == "clipboard":
+        window["clipboard"].update(value=cb.paste())
+        window["listbox"].update(values=clipboard_list)
 
-    if e == "listbox":
-        cb.copy(*v["listbox"])
+    if event == "listbox":
+        cb.copy(*val["listbox"])
 
-    if e is None:
-        w.close()
+    if event is None:
+        window.close()
         break
